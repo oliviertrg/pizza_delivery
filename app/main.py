@@ -6,4 +6,4 @@ app.include_router(auth.router)
 app.include_router(orders.router)
 @app.get("/")
 def test ():
-    return {"hello":"shit"}
+    return {"testing":"git testing"}
