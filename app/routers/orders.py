@@ -1,5 +1,5 @@
 from fastapi import FastAPI ,Response, status ,HTTPException,APIRouter,Depends
-from app.schema import Order,update_order
+from app.schema import Order,update_order,update_order_status
 from app.config import curso
 from app import auth2
 # import numpy as np
@@ -31,8 +31,43 @@ def view_orders(current_user : int = Depends(auth2.get_current_user)):
     view  = c.fetchall()
     model_view = list()
     for i in view :
-     model_view.append({"order_id" : i[0],"user_name":i[1],"order_status":i[2],"flavour":i[3],"pizza_size":i[4],"quantity":i[5],"create_at":i[6]})
+     model_view.append({
+         "order_id" : i[0],
+                        "user_name":i[1],
+                        "order_status":i[2],
+                        "flavour":i[3],
+                        "pizza_size":i[4],
+                        "quantity":i[5],
+                        "create_at":i[6]
+                       })
     return model_view
+
+@router.put('/update_order_status/{order_id}')
+def update_order_status(order_id : int,order_status : update_order_status ,current_user : int = Depends(auth2.get_current_user)):
+    db = curso()
+    c = db.cursor()
+    sql = f'''select * from "orders" where "order_id" = {order_id} ; '''
+    c.execute(sql)
+    x = c.fetchall()
+    if len(x) == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"order with id: {order_id} does not exist")
+    if x[0][1] != int(current_user.id) :
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Not authorized to perform requested action")
+    else:
+       try:
+        sql1 = f'''UPDATE "orders" SET 
+                          order_status = (%s) 
+                          WHERE order_id = {order_id};'''
+        x = (order_status.orders_status)
+        c.execute(sql1,x)
+        db.commit()
+       except Exception as e :
+         raise  HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                              detail = f"{e}")
+         print(f"Error {e}")
+       return order_status
 
 @router.put('/update/{order_id}',response_model=update_order)
 def update_order(order_id : int,new_order : update_order,current_user : int = Depends(auth2.get_current_user)) :
@@ -48,6 +83,7 @@ def update_order(order_id : int,new_order : update_order,current_user : int = De
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Not authorized to perform requested action")
     else:
+     try:
         sql1 = f'''UPDATE "orders" SET 
                   pizza_size = (%s) ,
                   flavour = (%s) ,
@@ -56,7 +92,12 @@ def update_order(order_id : int,new_order : update_order,current_user : int = De
         x = (new_order.pizza_size,new_order.flavour,new_order.quantity)
         c.execute(sql1,x)
         db.commit()
-    return new_order
+     except Exception as e:
+         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                             detail=f"{e}")
+         print(f"Error {e}")
+     return new_order
+
 
 @router.delete('/delete/{order_id}',status_code=status.HTTP_204_NO_CONTENT)
 def delete_order(order_id : int,current_user : int = Depends(auth2.get_current_user)):

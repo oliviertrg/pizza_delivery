@@ -26,6 +26,11 @@ class Order(BaseModel):
     quantity : int
 class update_order(Order):
     pass
+class update_order_status(BaseModel):
+    orders_status : str
+class update_users(BaseModel):
+    username : str
+    email : str
 # class update_order(BaseModel):
 #     pizza_size: str
 #     flavour: str
