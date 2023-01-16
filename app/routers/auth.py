@@ -11,11 +11,9 @@ def login(user_credentials : OAuth2PasswordRequestForm = Depends()):
     db = curso()
     c = db.cursor()
     b = (user_credentials.username)
-    print(b)
     sql = (f'''SELECT * FROM "users" where "email" = '{b}' ;''')
     c.execute(sql)
     user = c.fetchall()
-    print(user[0][3],user[0][0])
     if len(user) == 0 :
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
