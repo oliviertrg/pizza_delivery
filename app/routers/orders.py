@@ -11,13 +11,18 @@ router = APIRouter (
 
 @router.post('/',status_code=status.HTTP_201_CREATED,response_model=Order)
 def create_order(new_order : Order,current_user : int = Depends(auth2.get_current_user)):
- db = curso()
- c = db.cursor()
- sql = '''insert into orders(user_id,pizza_size,flavour,quantity) 
- values(%s,%s,%s,%s) ;'''
- x = (int(current_user.id),new_order.pizza_size,new_order.flavour,new_order.quantity)
- c.execute(sql,x)
- db.commit()
+ try:
+     db = curso()
+     c = db.cursor()
+     sql = '''insert into orders(user_id,pizza_size,flavour,quantity) 
+     values(%s,%s,%s,%s) ;'''
+     x = (int(current_user.id),new_order.pizza_size,new_order.flavour,new_order.quantity)
+     c.execute(sql,x)
+     db.commit()
+ except Exception as e:
+     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                         detail=f"{e}")
+     print(f"Error {e}")
  return new_order
 
 @router.get('/views')
@@ -30,6 +35,9 @@ def view_orders(current_user : int = Depends(auth2.get_current_user)):
     c.execute(sql)
     view  = c.fetchall()
     model_view = list()
+    if len(view) == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"you dont have any order")
     for i in view :
      model_view.append({
          "order_id" : i[0],
