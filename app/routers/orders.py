@@ -38,16 +38,17 @@ def view_orders(current_user : int = Depends(auth2.get_current_user)):
     if len(view) == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"you dont have any order")
-    for i in view :
-     model_view.append({
-         "order_id" : i[0],
-                        "user_name":i[1],
-                        "order_status":i[2],
-                        "flavour":i[3],
-                        "pizza_size":i[4],
-                        "quantity":i[5],
-                        "create_at":i[6]
-                       })
+    else:
+        for i in view :
+         model_view.append({
+             "order_id" : i[0],
+                            "user_name":i[1],
+                            "order_status":i[2],
+                            "flavour":i[3],
+                            "pizza_size":i[4],
+                            "quantity":i[5],
+                            "create_at":i[6]
+                           })
     return model_view
 
 @router.put('/update_order_status/{order_id}')
