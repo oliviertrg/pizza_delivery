@@ -41,7 +41,7 @@ def view_orders(current_user : int = Depends(auth2.get_current_user)):
     else:
         for i in view :
          model_view.append({
-             "order_id" : i[0],
+                            "order_id" : i[0],
                             "user_name":i[1],
                             "order_status":i[2],
                             "flavour":i[3],
