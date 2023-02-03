@@ -2,6 +2,8 @@ from fastapi import FastAPI ,Response, status ,HTTPException,APIRouter,Depends
 from app.schema import Order,update_order,update_order_status
 from app.config import curso
 from app import auth2
+from starlette.requests import Request
+import requests
 # import numpy as np
 
 router = APIRouter (
@@ -9,21 +11,22 @@ router = APIRouter (
     tags = ["orders"]
 )
 
-@router.post('/',status_code=status.HTTP_201_CREATED,response_model=Order)
-def create_order(new_order : Order,current_user : int = Depends(auth2.get_current_user)):
- try:
-     db = curso()
-     c = db.cursor()
-     sql = '''insert into orders(user_id,pizza_size,flavour,quantity) 
-     values(%s,%s,%s,%s) ;'''
-     x = (int(current_user.id),new_order.pizza_size,new_order.flavour,new_order.quantity)
-     c.execute(sql,x)
-     db.commit()
- except Exception as e:
-     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                         detail=f"{e}")
-     print(f"Error {e}")
- return new_order
+# @router.post('/',status_code=status.HTTP_201_CREATED,response_model=Order)
+# def create_order(new_order : Order,current_user : int = Depends(auth2.get_current_user)):
+#  try:
+#      db = curso()
+#      c = db.cursor()
+#      sql = '''insert into orders(user_id,pizza_size,flavour,quantity)
+#      values(%s,%s,%s,%s) ;'''
+#      x = (int(current_user.id),new_order.pizza_size,new_order.flavour,new_order.quantity)
+#      c.execute(sql,x)
+#      db.commit()
+#
+#  except Exception as e:
+#      raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+#                          detail=f"{e}")
+#      print(f"Error {e}")
+#  return new_order
 
 @router.get('/views')
 def view_orders(current_user : int = Depends(auth2.get_current_user)):
@@ -128,3 +131,23 @@ def delete_order(order_id : int,current_user : int = Depends(auth2.get_current_u
     print("newupdate")
         
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post('/', status_code=status.HTTP_201_CREATED, response_model=Order)
+async def create_order(request_in : Request,new_order: Order, current_user: int = Depends(auth2.get_current_user)):
+    try:
+        db = curso()
+        c = db.cursor()
+        sql = '''insert into orders(user_id,pizza_size,flavour,quantity) 
+     values(%s,%s,%s,%s) ;'''
+        x = (int(current_user.id), new_order.pizza_size, new_order.flavour, new_order.quantity)
+        c.execute(sql, x)
+        db.commit()
+        body = await request_in.json()
+        print(body)
+        req = requests.post("http://127.0.0.1:8000/product/post/",json=body)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail=f"{e}")
+        print(f"Error {e}")
+    return new_order
