@@ -46,9 +46,10 @@ def update_user(id : int,new_update_user : update_users,current_user : int = Dep
             c.execute(sql1)
             db.commit()
         except Exception as e:
+            print(f"Error {e}")
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail=f"{e}")
-            print(f"Error {e}")
+            
         return new_update_user
 
 @router.delete('/delete/{id}',status_code=status.HTTP_204_NO_CONTENT)
