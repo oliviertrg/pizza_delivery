@@ -15,10 +15,6 @@ consumer = KafkaConsumer(
                         api_version=(0,11,5)
                         )
 
-
-# 1. Import the config object from decouple.
-
-
 def event_driver():
 #  db = curso()
 #  c = db.cursor()
