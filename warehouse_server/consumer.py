@@ -32,7 +32,6 @@ def event_driver():
     print(i[6])
     b = json.loads(i[6].decode())
     a = json.loads(b)
-    # print(type(a))
     # print(a["flavour"])
     # print(a["id"])
     # sql = f""" UPDATE products SET prices = {a["prices"] - x}   WHERE id = {a["id"]} ;  """
