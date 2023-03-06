@@ -23,7 +23,6 @@ def event_driver():
  a = list()
  for i in consumer:
     print("sending",300*"-")
-    print(i)
     print("checking this type ======>>>> ",type(i))
     print(i[6])
     b = json.loads(i[6].decode())
