@@ -23,7 +23,6 @@ def event_driver():
 #  db = curso()
 #  c = db.cursor()
  print("sending",300*"-")
-#  print(len(consumer))
  print(consumer)
  a = list()
  for i in consumer:
@@ -44,12 +43,6 @@ def event_driver():
     # db.commit()
     b = str(a["flour"])
     print(type(b)) 
-    # sql = f"""  insert into test(something) values ('{b}') ;  """
-    # c.execute(sql)
-    # db.commit()
-    # consumer.close()   
-
-# KafkaConsumer.close()
-# consumer.close()    
+   
 if __name__ == "__main__":
      event_driver()
