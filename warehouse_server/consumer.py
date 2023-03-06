@@ -29,9 +29,6 @@ def event_driver():
     print("sending",300*"-")
     print(i)
     print("checking this type ======>>>> ",type(i))
-    
-    # a.append(i)
-    # print(type(i.value))
     print(i[6])
     b = json.loads(i[6].decode())
     a = json.loads(b)
