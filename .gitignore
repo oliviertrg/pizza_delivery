@@ -1,3 +1,3 @@
 # created by virtualenv automatically
-*.env
-*warehouse.env
+.env
+warehouse.env
