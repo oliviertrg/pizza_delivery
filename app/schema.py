@@ -1,5 +1,6 @@
 from pydantic import BaseModel,EmailStr
 from typing import Optional
+from starlette.requests import Request
 
 
 class users(BaseModel):
@@ -7,7 +8,7 @@ class users(BaseModel):
     email : EmailStr
     password : str
     is_actice : bool = True
-    is_staff : bool  = True
+    is_staff : bool  = False
 
 class login(BaseModel):
     email : EmailStr
@@ -24,6 +25,7 @@ class Order(BaseModel):
     pizza_size : str
     flavour : str
     quantity : int
+    orders_status : str = "pending"
 class update_order(Order):
     pass
 class update_order_status(BaseModel):
@@ -31,6 +33,7 @@ class update_order_status(BaseModel):
 class update_users(BaseModel):
     username : str
     email : str
+    is_staff : bool
 # class update_order(BaseModel):
 #     pizza_size: str
 #     flavour: str

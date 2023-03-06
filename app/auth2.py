@@ -3,11 +3,12 @@ from app import schema
 from fastapi import Depends,status,HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from datetime import datetime,timedelta
-from app.config import get_authen
+# from app.config import get_authen
+from decouple import config
 
-SECRET_KEY = get_authen()["SECRET_KEY"]
-ALGORITHM = get_authen()["ALGORITHM"]
-ACCESS_TOKEN_EXPIRE_MINUTES = get_authen()["ACCESS_TOKEN_EXPIRE_MINUTES"]
+SECRET_KEY = config("SECRET_KEY")
+ALGORITHM = config("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(config("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 oath2_schema = OAuth2PasswordBearer(tokenUrl='login')
 
@@ -33,7 +34,9 @@ def verify_access_token(token : str,credentials_exception) :
         if user_id is None :
             raise credentials_exception
         token_data = schema.tokendata(id = user_id)
-    except JWSError:
+    # except JWSError:
+    # we were try but this shit ain't work
+    except :
         raise credentials_exception
     return token_data
 
