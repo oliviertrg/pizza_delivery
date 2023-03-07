@@ -4,7 +4,7 @@ import psycopg2
 # 1. Import the config object from decouple.
 from decouple import config
 
-async def curso():
+def curso():
  try :
     conn = psycopg2.connect(
         host = "postgres-warehouse",

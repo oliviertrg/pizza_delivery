@@ -27,43 +27,43 @@ async def ingredient(new_order : Order):
         if new_order.pizza_size == 's':
             i = {
                 "flour" : float(0.25),
-                "Pizza Sauce" : float(0.12),
+                "tomato sauce" : float(0.12),
                 "mozzarella" : float(0.1) ,
-                "sausage":float(0.05)
+                "pepperoni":float(0.05)
             }
         if new_order.pizza_size == 'm' :
             i = {
                 "flour" : float(0.3),
-                "Pizza Sauce" : float(0.144),
+                "tomato sauce" : float(0.144),
                 "mozzarella" : float(0.12) ,
-                "sausage":float(0.06)
+                "pepperoni":float(0.06)
             }
         if new_order.pizza_size == 'l' :
             i = {
                 "flour" : float(0.36),
-                "Pizza Sauce" : float(0.180),
+                "tomato sauce" : float(0.180),
                 "mozzarella" : float(0.144) ,
-                "sausage":float(0.075)
+                "pepperoni":float(0.075)
             } 
     if  new_order.flavour == 'bacon':
         if new_order.pizza_size == 's':
             i = {
                 "flour" : float(0.25),
-                "Pizza Sauce" : float(0.12),
+                "tomato sauce" : float(0.12),
                 "mozzarella" : float(0.1) ,
                 "Bacon":float(0.05)
             }
         if new_order.pizza_size == 'm' :
             i = {
                 "flour" : float(0.3),
-                "Pizza Sauce" : float(0.144),
+                "tomato sauce" : float(0.144),
                 "mozzarella" : float(0.12) ,
                 "Bacon":float(0.06)
             }
         if new_order.pizza_size == 'l' :
             i = {
                 "flour" : float(0.36),
-                "Pizza Sauce" : float(0.180),
+                "tomato sauce" : float(0.180),
                 "mozzarella" : float(0.144) ,
                 "Bacon":float(0.075)
             }
@@ -71,24 +71,24 @@ async def ingredient(new_order : Order):
         if new_order.pizza_size == 's':
             i = {
                 "flour" : float(0.25),
-                "Pizza Sauce" : float(0.12),
+                "tomato sauce" : float(0.12),
                 "mozzarella" : float(0.1) ,
                 "mushrooms":float(0.05)
             }
         if new_order.pizza_size == 'm' :
             i = {
                 "flour" : float(0.3),
-                "Pizza Sauce" : float(0.144),
+                "tomato sauce" : float(0.144),
                 "mozzarella" : float(0.12) ,
                 "mushrooms":float(0.06)
             }
         if new_order.pizza_size == 'l' :
             i = {
                 "flour" : float(0.36),
-                "Pizza Sauce" : float(0.180),
+                "tomato sauce" : float(0.180),
                 "mozzarella" : float(0.144) ,
                 "mushrooms":float(0.075)
             }
-     
+    i.update({"quantity" : int(new_order.quantity)}) 
     return json.dumps(i)        
 

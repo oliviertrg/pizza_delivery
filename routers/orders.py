@@ -10,7 +10,8 @@ import json
 
 from kafka import KafkaProducer
 
-
+db = curso()
+c = db.cursor()
 
 ORDER_KAFKA_TOPIC = "order_details"
 
@@ -22,12 +23,10 @@ router = APIRouter (
 )
 
 @router.post('/',status_code=status.HTTP_201_CREATED,response_model=Order)
-def create_order(new_order : Order,current_user : int = Depends(auth2.get_current_user)):
+async def create_order(new_order : Order,current_user : int = Depends(auth2.get_current_user)):
  try:
-     db = curso()
-     c = db.cursor()
      sql = '''insert into orders(user_id,pizza_size,flavour,quantity,order_status)
-     values(%s,%s,%s,%s,%s) ;'''
+              values(%s,%s,%s,%s,%s) ;'''
      x = (int(current_user.id),new_order.pizza_size,new_order.flavour,new_order.quantity,new_order.orders_status)
      c.execute(sql,x)
      db.commit()
@@ -43,9 +42,8 @@ def create_order(new_order : Order,current_user : int = Depends(auth2.get_curren
 
 
 @router.put('/update_order_status/{order_id}')
-def update_order_status(order_id : int,order_status : update_order_status ,current_user : int = Depends(auth2.get_current_user)):
-    db = curso()
-    c = db.cursor()
+async def update_order_status(order_id : int,order_status : update_order_status ,current_user : int = Depends(auth2.get_current_user)):
+
     sql = f'''select * from "orders"
               where "order_id" = {order_id} ; '''
     sql2 = f'''select * from "users" 
@@ -86,9 +84,8 @@ def update_order_status(order_id : int,order_status : update_order_status ,curre
        return order_status
 
 @router.get('/views')
-def view_orders(current_user : int = Depends(auth2.get_current_user)):
-    db = curso()
-    c = db.cursor()
+async def view_orders(current_user : int = Depends(auth2.get_current_user)):
+    
     sql = f'''select order_id,usersname,order_status,flavour,pizza_size,quantity,orders.create_at  
               from "orders" left join "users" on orders.user_id = users.user_id 
               where orders.user_id = {int(current_user.id)} ;'''
@@ -109,16 +106,13 @@ def view_orders(current_user : int = Depends(auth2.get_current_user)):
                             "quantity":i[5],
                             "create_at":i[6]
                            }))
-    k = producer.config['api_version']
-    return {"data":model_view,
-            "api_version" : str(k)}
+    return model_view
             
 
 
 @router.put('/update/{order_id}',response_model=update_order)
-def update_order(order_id : int,new_order : update_order,current_user : int = Depends(auth2.get_current_user)) :
-    db = curso()
-    c = db.cursor()
+async def update_order(order_id : int,new_order : update_order,current_user : int = Depends(auth2.get_current_user)) :
+
     sql = f'''select * from "orders" where "order_id" = {order_id} ; '''
     c.execute(sql)
     x = c.fetchall()
@@ -147,9 +141,8 @@ def update_order(order_id : int,new_order : update_order,current_user : int = De
 
 
 @router.delete('/delete/{order_id}',status_code=status.HTTP_204_NO_CONTENT)
-def delete_order(order_id : int,current_user : int = Depends(auth2.get_current_user)):
-    db = curso()
-    c = db.cursor()
+async def delete_order(order_id : int,current_user : int = Depends(auth2.get_current_user)):
+
     sql = f'''select * from "orders" where "order_id" = {order_id} ; '''
     c.execute(sql)
     x = c.fetchall()

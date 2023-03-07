@@ -4,6 +4,7 @@ from routers import users,auth,orders
 from fastapi.middleware.cors import  CORSMiddleware
 from starlette.requests import Request
 import requests
+from app.config import curso
 
 app = FastAPI()
 

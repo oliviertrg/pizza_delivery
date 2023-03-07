@@ -8,12 +8,13 @@ router = APIRouter (
          tags = ["users"]
 )
 
+db = curso()
+c = db.cursor()
+
 @router.post('/register',status_code=status.HTTP_201_CREATED)
-def register(new_user : users):
+async def register(new_user : users):
   new_pass = hashpass(new_user.password)
   new_user.password = new_pass
-  db = curso()
-  c = db.cursor()
   x = (new_user.username,new_user.email,new_user.password,new_user.is_actice,new_user.is_staff)
   sql = (""" insert into users(usersname,email,passwords,is_active,is_staff) 
              values (%s,%s,%s,%s,%s) ; """)
@@ -22,9 +23,7 @@ def register(new_user : users):
   return {"username":new_user.username,
           "email":new_user.email }
 @router.put('/update/{id}',response_model = update_users)
-def update_user(id : int,new_update_user : update_users,current_user : int = Depends(auth2.get_current_user)):
-    db = curso()
-    c = db.cursor()
+async def update_user(id : int,new_update_user : update_users,current_user : int = Depends(auth2.get_current_user)):
     sql = f'''select * from "users"	where "user_id" = {id} ;'''
     c.execute(sql)
     x = c.fetchall()
@@ -53,9 +52,7 @@ def update_user(id : int,new_update_user : update_users,current_user : int = Dep
         return new_update_user
 
 @router.delete('/delete/{id}',status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(id: int,current_user : int = Depends(auth2.get_current_user)):
-  db = curso()
-  c = db.cursor()
+async def delete_user(id: int,current_user : int = Depends(auth2.get_current_user)):
   sql = f'''select * from "users"	where "user_id" = {id} ;'''
   c.execute(sql)
   x = c.fetchall()
