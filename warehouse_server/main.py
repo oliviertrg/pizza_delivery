@@ -10,6 +10,7 @@ from kafka import KafkaConsumer
 from warehouse_server.config import curso
 
 
+
 app = FastAPI()
 origins = ["http://0.0.0.0:8000/"]
 
@@ -90,5 +91,13 @@ async def ingredient(new_order : Order):
                 "mushrooms":float(0.075)
             }
     i.update({"quantity" : int(new_order.quantity)}) 
-    return json.dumps(i)        
+    return json.dumps(i)
 
+@app.get("/views")
+def views():
+    db = curso()
+    c = db.cursor()
+    sql = f"""SELECT * FROM "pizza-warehouse" ; """
+    c.execute(sql)
+    v = c.fetchall()       
+    return {"data" : v}

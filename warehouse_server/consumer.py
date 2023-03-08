@@ -14,6 +14,7 @@ consumer = KafkaConsumer(
                         )
 db = curso()
 c = db.cursor()
+
 def event_driver():
  for i in consumer:
     b = json.loads(i[6].decode())
