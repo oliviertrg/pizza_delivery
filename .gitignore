@@ -1,3 +1,7 @@
-# created by virtualenv automatically
+# Default ignored files
+/shelf/
+/workspace.xml
 *.env
+
 *warehouse.env
+
