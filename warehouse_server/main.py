@@ -1,13 +1,14 @@
 from fastapi import FastAPI , status ,HTTPException,APIRouter
 from fastapi.middleware.cors import  CORSMiddleware
 from starlette.requests import Request
-from warehouse_server.schema import Order
+from schema import Order
 import json
 import requests
 import kafka
 from kafka import KafkaConsumer
+from consumer import event_driver
 # from kafka import KafkaConsumer
-from warehouse_server.config import curso
+from config import curso
 
 
 
@@ -52,21 +53,21 @@ async def ingredient(new_order : Order):
                 "flour" : float(0.25),
                 "tomato sauce" : float(0.12),
                 "mozzarella" : float(0.1) ,
-                "Bacon":float(0.05)
+                "bacon":float(0.05)
             }
         if new_order.pizza_size == 'm' :
             i = {
                 "flour" : float(0.3),
                 "tomato sauce" : float(0.144),
                 "mozzarella" : float(0.12) ,
-                "Bacon":float(0.06)
+                "bacon":float(0.06)
             }
         if new_order.pizza_size == 'l' :
             i = {
                 "flour" : float(0.36),
                 "tomato sauce" : float(0.180),
                 "mozzarella" : float(0.144) ,
-                "Bacon":float(0.075)
+                "bacon":float(0.075)
             }
     if  new_order.flavour == 'mushrooms':
         if new_order.pizza_size == 's':
@@ -101,3 +102,5 @@ def views():
     c.execute(sql)
     v = c.fetchall()       
     return {"data" : v}
+
+

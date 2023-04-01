@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-configs
+data:
+  POSTGRES_HOST: 'postgres'
+  POSTGRES_PORT: '54323'
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secrets
+type: Opaque
+data:
+  POSTGRES_DB: cG9zdGdyZXM=
+  POSTGRES_USER: cG9zdGdyZXM=
+  POSTGRES_PASSWORD: cmlvdmVyckBpbjIy
+
+---  
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-orders-storage
+
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2G
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: '/mnt/orders'
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-orders-storage-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2G
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-orders
+  # namespace: backstage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-orders
+  template:
+    metadata:
+      labels:
+        app: postgres-orders
+    spec:
+      containers:
+        - name: postgres-orders
+          image: postgres:13.2-alpine
+          imagePullPolicy: 'IfNotPresent'
+          ports:
+            - containerPort: 54323
+          envFrom:
+            - secretRef:
+                name: postgres-secrets
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgresdb-orders
+      volumes:
+        - name: postgresdb-orders
+          persistentVolumeClaim:
+            claimName: postgres-orders-storage-claim
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-orders
+spec:
+  selector:
+    app: postgres-orders
+  ports:
+    - port: 54323

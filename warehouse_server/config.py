@@ -7,8 +7,9 @@ from decouple import config
 def curso():
  try :
     conn = psycopg2.connect(
-        host = "postgres-warehouse",
-        database = "db-warehouse",
+        host = 'host.docker.internal',
+        port=54321,
+        database = config('POSTGRES_DB'),
         user = config('POSTGRES_USER'),
         password = config('POSTGRES_PASSWORD')
     )

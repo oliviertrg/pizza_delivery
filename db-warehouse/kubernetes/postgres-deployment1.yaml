@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-configs
+data:
+  POSTGRES_HOST: 'postgres'
+  POSTGRES_PORT: '54321'
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secrets
+type: Opaque
+data:
+  POSTGRES_DB: ZGJfd2FycmVob3VzZQ==
+  POSTGRES_USER: cG9zdGdyZXM=
+  POSTGRES_PASSWORD: cmlvdmVyckBpbjIy
+
+---  
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-warehouse-storage
+
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2G
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: '/mnt/warehouse'
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-warehouse-storage-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2G
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-warehouse
+  # namespace: backstage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-warehouse
+  template:
+    metadata:
+      labels:
+        app: postgres-warehouse
+    spec:
+      containers:
+        - name: postgres-warehouse
+          image: postgres:13.2-alpine
+          imagePullPolicy: 'IfNotPresent'
+          ports:
+            - containerPort: 54321
+          envFrom:
+            - secretRef:
+                name: postgres-secrets
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgresdb-warehouse
+      volumes:
+        - name: postgresdb-warehouse
+          persistentVolumeClaim:
+            claimName: postgres-warehouse-storage-claim
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-warehouse
+spec:
+  selector:
+    app: postgres-warehouse
+  ports:
+    - port: 54321
