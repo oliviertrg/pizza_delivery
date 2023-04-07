@@ -22,22 +22,25 @@ router = APIRouter (
     tags = ["orders"]
 )
 
-@router.post('/',status_code=status.HTTP_201_CREATED,response_model=Order)
+@router.post('/',status_code=status.HTTP_201_CREATED)
 async def create_order(new_order : Order,current_user : int = Depends(auth2.get_current_user)):
  try:
      sql = '''insert into orders(user_id,pizza_size,flavour,quantity,order_status)
-              values(%s,%s,%s,%s,%s) ;'''
+              values(%s,%s,%s,%s,%s) ;
+              select order_id from orders order by create_at desc limit 1 ;
+              '''
      x = (int(current_user.id),new_order.pizza_size,new_order.flavour,new_order.quantity,new_order.orders_status)
      c.execute(sql,x)
+     y = c.fetchall()
      db.commit()
-     print(db.commit())
-          
  except Exception as e:
      print(f"Error {e}")
      raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                          detail=f"{e}")
      
- return new_order
+ return {"id orders":y[0][0],
+         "orders":new_order}
+#  return  {"data":new_order}
 
 
 @router.put('/update_order_status/{order_id}')
@@ -84,7 +87,7 @@ async def update_order_status(order_id : int,order_status : update_order_status 
 @router.get('/views')
 async def view_orders(current_user : int = Depends(auth2.get_current_user)):
     
-    sql = f'''select order_id,usersname,order_status,flavour,pizza_size,quantity,orders.create_at  
+    sql = f'''select order_id,orders.user_id,order_status,flavour,pizza_size,quantity,orders.create_at  
               from "orders" left join "users" on orders.user_id = users.user_id 
               where orders.user_id = {int(current_user.id)} ;'''
     c.execute(sql)

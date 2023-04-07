@@ -26,6 +26,7 @@ class Order(BaseModel):
     flavour : str
     quantity : int
     orders_status : str = "pending"
+
 class update_order(Order):
     pass
 class update_order_status(BaseModel):
