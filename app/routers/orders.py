@@ -40,7 +40,7 @@ async def create_order(new_order : Order,current_user : int = Depends(auth2.get_
      
  return {"id orders":y[0][0],
          "orders":new_order}
-#  return  {"data":new_order}
+
 
 
 @router.put('/update_order_status/{order_id}')
