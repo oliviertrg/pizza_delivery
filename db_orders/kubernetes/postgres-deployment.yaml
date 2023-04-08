@@ -4,7 +4,7 @@ metadata:
   name: postgres-configs
 data:
   POSTGRES_HOST: 'postgres'
-  POSTGRES_PORT: '54323'
+  POSTGRES_PORT: '54322'
 ---
 apiVersion: v1
 kind: Secret
@@ -67,7 +67,7 @@ spec:
           image: postgres:13.2-alpine
           imagePullPolicy: 'IfNotPresent'
           ports:
-            - containerPort: 54323
+            - containerPort: 54322
           envFrom:
             - secretRef:
                 name: postgres-secrets
@@ -89,4 +89,4 @@ spec:
   selector:
     app: postgres-orders
   ports:
-    - port: 54323
+    - port: 54322
